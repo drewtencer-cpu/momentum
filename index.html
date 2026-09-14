@@ -23,8 +23,8 @@ function addMonths(s,n){let d=pd(s),day=d.getDate();d.setDate(1);d.setMonth(d.ge
 function dueFor(t,i){if(t.freq==="daily"){let d=pd(t.due);d.setDate(d.getDate()+i);return ds(d)}if(t.freq==="weekly"){let d=pd(t.due);d.setDate(d.getDate()+7*i);return ds(d)}return addMonths(t.due,i)}
 function periodForDate(t,d){if(d<t.due)return null;let i=0,x=t.due,next;while(i<5000){next=dueFor(t,i+1);if(d<next)return {i,due:x,next:next};i++;x=next}return null}
 function completions(t){return t.completions||[]}function firstCompletion(t,p){return completions(t).filter(c=>c.period===p.i).sort((a,b)=>a.date.localeCompare(b.date))[0]||null}
-function recurContribution(t,d){let p=periodForDate(t,d);if(!p)return 0, cs=completions(t).filter(c=>c.date===d), earned=cs.reduce((a,c)=>a+(+c.points||+t.points),0), first=firstCompletion(t,p);
- if(earned)return rnd(earned);
+function recurContribution(t,d){let p=periodForDate(t,d);if(!p)return 0;let cs=completions(t).filter(c=>c.date===d),earned=cs.reduce((a,c)=>a+(+c.points||0),0),first=firstCompletion(t,p);
+ if(cs.length)return rnd(earned);
  if(first&&d>=first.date)return 0;
  if(d>p.due)return rnd(-(+t.points));
  return 0}
@@ -47,7 +47,7 @@ $("#deleteBtn").onclick=()=>{state.tasks=state.tasks.filter(t=>t.id!==editing);s
 $("#completeBtn").onclick=()=>{let t=cur();$("#completeName").textContent=t.name;$("#completeDate").value=today();$("#completeDate").max=today();preview();$("#completeModal").style.display="flex"};$("#closeComplete").onclick=()=>$("#completeModal").style.display="none";
 function preview(){let t=cur(),d=$("#completeDate").value;if(!t||!d)return;if(t.type==="once")$("#preview").textContent=d<=t.due?"Completion adds "+fmt(onceReward(t,d))+" to "+d+".":"Overdue completion adds 0.00 on "+d+" and removes that day's penalty and all later penalties.";else{let p=periodForDate(t,d),first=p&&firstCompletion(t,p);$("#preview").textContent=p?(d<=p.due?"On-time completion adds "+fmt(+t.points)+".":(!first?"Overdue completion adds 0.00 and stops this occurrence's penalties.":"Additional repeatable completion adds "+fmt(+t.points)+".")):"This date is before the first recurring due date."}}
 $("#completeDate").onchange=preview;
-$("#confirmBtn").onclick=()=>{let t=cur(),d=$("#completeDate").value;if(!t||!d)return;if(t.type==="once")t.completed=d;else{let p=periodForDate(t,d);if(!p)return;let first=firstCompletion(t,p);if(t.type==="recurring-lock"&&first)return;let val=(!first&&d>p.due)?0:+t.points;t.completions=t.completions||[];t.completions.push({date:d,period:p.i,points:val})}let earned=t.type==="once"?(d<=t.due?onceReward(t,d):0):((!first&&d>p.due)?0:+t.points);save();$("#completeModal").style.display="none";$("#taskModal").style.display="none";render();if(earned>0){let a=$("#positiveSound");try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}}};
+$("#confirmBtn").onclick=()=>{let t=cur(),d=$("#completeDate").value;if(!t||!d)return;let earned=0;if(t.type==="once"){earned=d<=t.due?onceReward(t,d):0;t.completed=d}else{let p=periodForDate(t,d);if(!p)return;let first=firstCompletion(t,p);if(t.type==="recurring-lock"&&first)return;earned=(!first&&d>p.due)?0:+t.points;t.completions=t.completions||[];t.completions.push({date:d,period:p.i,points:earned})}save();$("#completeModal").style.display="none";$("#taskModal").style.display="none";render();if(earned>0){let a=$("#positiveSound");try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}}};
 $("#endDay").onchange=e=>{state.endDay=e.target.value;save();clock()};$("#hiBtn").onclick=()=>{view="hi";renderBoard()};$("#histBtn").onclick=()=>{view="hist";renderBoard()};render();setInterval(clock,3e4);if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
 </script></body></html>
