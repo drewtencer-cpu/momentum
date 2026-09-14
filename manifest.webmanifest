@@ -1,0 +1,9 @@
+{
+  "name": "Momentum",
+  "short_name": "Momentum",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f1e9",
+  "theme_color": "#f4f1e9",
+  "description": "Momentum task scoring prototype V1.2"
+}
