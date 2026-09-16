@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f4f1e9"><meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="./manifest.webmanifest"><title>Momentum V1.3 Rebuild</title>
+<link rel="manifest" href="./manifest.webmanifest"><title>Momentum V1.4</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f1e9;color:#1d1d1d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 main{max-width:620px;margin:auto;padding:22px 16px 80px}.top{display:flex;justify-content:space-between;align-items:start;gap:20px}
@@ -20,19 +20,24 @@ label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,selec
 .modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:flex-end;justify-content:center}.sheet{background:#fffdf8;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
 .actions{display:flex;gap:8px;margin-top:18px}.actions button{flex:1}.history{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-top:1px solid #eee7db}.history:first-child{border-top:0}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#222;color:white;border-radius:999px;padding:10px 15px;font-size:13px;font-weight:700;opacity:0;transition:.18s;z-index:30;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+.scoreday{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:10px 0;border-top:1px solid #eee7db;cursor:pointer}.scoreday:first-child{border-top:0}
+.graph{height:180px;display:flex;align-items:flex-end;gap:5px;margin-top:12px;overflow-x:auto;border-bottom:1px solid #aaa}.gcol{min-width:22px;flex:1;text-align:center;cursor:pointer}.gbar{background:#222;border-radius:4px 4px 0 0;min-height:2px}.glabel{font-size:9px;opacity:.5;margin-top:4px}.event{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 0;border-top:1px solid #eee7db;cursor:pointer}
 @media(min-width:700px){.modal{align-items:center}.sheet{border-radius:24px}}
 </style></head>
 <body><main>
 <div class="top"><div><div class="kicker">Today's score</div><div id="score" class="score">0.00</div><div id="date" class="date"></div></div><div id="ring" class="ring"><span id="clock"></span></div></div>
 <section class="card"><div class="head"><h2>Tasks</h2><button id="add">+ Task</button></div><div id="tasks"></div></section>
-<section class="card"><div class="head"><h2>History</h2></div><div id="history"></div></section>
-<section class="card"><div class="head"><h2>Day settings</h2></div><label>End of day</label><input id="endDay" type="time"><div class="meta" style="margin-top:9px">V1.3 clean rebuild</div></section>
+<section class="card"><div class="head"><h2>Scoreboard</h2></div>
+<div class="row" style="margin-top:10px"><button id="highView">High Scores</button><button id="graphView" class="secondary">History</button></div>
+<div id="history"></div></section>
+<section class="card"><div class="head"><h2>Day settings</h2></div><div class="row"><div><label>Start of day</label><input id="startDay" type="time"></div><div><label>End of day</label><input id="endDay" type="time"></div></div>
+<div class="meta" style="margin-top:8px">Completions after End of Day and before the next Start of Day count toward the upcoming scoring day.</div><div class="meta" style="margin-top:9px">V1.4 test build</div></section>
 </main>
 
 <div id="taskModal" class="modal"><div class="sheet">
 <div class="head"><h2 id="taskTitle">New task</h2><button id="taskClose" class="secondary">Close</button></div>
 <label>Task name</label><input id="name" autocomplete="off">
-<div class="row"><div><label>Points</label><input id="points" type="number" min="1" step="1" inputmode="numeric"></div><div><label>Start date</label><input id="start" type="date"></div></div>
+<div class="row"><div><label>Points</label><input id="points" type="number" min="1" max="10" step="1" inputmode="numeric"></div><div><label>Start date</label><input id="start" type="date"></div></div>
 <label>Due date / first due date</label><input id="due" type="date">
 <label>Type</label><select id="type"><option value="once">One-time</option><option value="recurring-lock">Recurring — once per period</option><option value="recurring-repeat">Recurring — repeatable</option></select>
 <div id="freqBox"><label>Frequency</label><select id="freq"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
@@ -45,15 +50,19 @@ label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,selec
 <div id="completeName" class="meta"></div><label>Completion date</label><input id="completionDate" type="date"><div id="completionPreview" class="meta" style="margin-top:10px"></div>
 <div class="actions"><button id="confirmCompletion">Confirm completion</button></div>
 </div></div>
+<div id="dayModal" class="modal"><div class="sheet"><div class="head"><div><h2 id="dayTitle">Daily Score Details</h2><div id="dayTotal" class="meta"></div></div><button id="dayClose" class="secondary">Close</button></div><div id="dayEvents"></div></div></div>
+<div id="adjustModal" class="modal"><div class="sheet"><div class="head"><h2>Adjust completion</h2><button id="adjustClose" class="secondary">Close</button></div><div id="adjustName" class="meta"></div><label>Completion scoring date</label><input id="adjustDate" type="date"><div class="actions"><button id="adjustSave">Save correction</button></div></div></div>
 <div id="toast" class="toast"></div><audio id="sound" src="./positive-points.m4a" preload="auto"></audio>
 
 <script>
 "use strict";
-const STORAGE="momentum-v1.3-clean";
+const STORAGE="momentum-v1.4";
+const PREVIOUS="momentum-v1.3-clean";
 const LEGACY="momentum-v1.2";
 const $=id=>document.getElementById(id);
 const dateString=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-const today=()=>dateString(new Date());
+const calendarToday=()=>dateString(new Date());
+function today(){let n=new Date(), [eh,em]=(state&&state.endDay?state.endDay:"22:00").split(":").map(Number), mins=n.getHours()*60+n.getMinutes();let d=new Date(n);if(mins>=eh*60+em)d.setDate(d.getDate()+1);return dateString(d)}
 const parseDate=s=>new Date(s+"T12:00:00");
 const days=(a,b)=>Math.round((parseDate(b)-parseDate(a))/86400000);
 const round2=n=>Math.round((n+Number.EPSILON)*100)/100;
@@ -61,18 +70,18 @@ const format=n=>(n>0?"+":"")+round2(n).toFixed(2);
 const id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 let state=loadState(), editingId=null;
 
-function blankState(){return {tasks:[],endDay:"22:00"}}
+function blankState(){return {tasks:[],startDay:"06:00",endDay:"22:00"}}
 function normalizeTask(t){
  return {id:t.id||id(),name:String(t.name||"Untitled"),points:Math.max(1,Math.round(Number(t.points)||1)),
- start:t.start||today(),due:t.due||today(),type:t.type||"once",freq:t.freq||"weekly",
+ start:t.start||calendarToday(),due:t.due||calendarToday(),type:t.type||"once",freq:t.freq||"weekly",
  completed:t.completed||t.completionDate||null,completions:Array.isArray(t.completions)?t.completions:[]};
 }
 function loadState(){
  try{
-  const own=localStorage.getItem(STORAGE);
-  if(own){const x=JSON.parse(own);return {tasks:(x.tasks||[]).map(normalizeTask),endDay:x.endDay||"22:00"}}
+  const own=localStorage.getItem(STORAGE)||localStorage.getItem(PREVIOUS);
+  if(own){const x=JSON.parse(own);return {tasks:(x.tasks||[]).map(normalizeTask),startDay:x.startDay||"06:00",endDay:x.endDay||"22:00"}}
   const old=localStorage.getItem(LEGACY);
-  if(old){const x=JSON.parse(old);const migrated={tasks:(x.tasks||[]).map(normalizeTask),endDay:x.endDay||"22:00"};localStorage.setItem(STORAGE,JSON.stringify(migrated));return migrated}
+  if(old){const x=JSON.parse(old);const migrated={tasks:(x.tasks||[]).map(normalizeTask),startDay:x.startDay||"06:00",endDay:x.endDay||"22:00"};localStorage.setItem(STORAGE,JSON.stringify(migrated));return migrated}
  }catch(e){console.error(e)}
  return blankState();
 }
@@ -83,9 +92,17 @@ function oncePenalty(t,d){if(d<=t.due)return 0;return round2(-unit(t)*days(t.due
 function addMonths(s,n){let d=parseDate(s),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);let last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return dateString(d)}
 function recurringDue(t,i){let d=parseDate(t.due);if(t.freq==="daily")d.setDate(d.getDate()+i);else if(t.freq==="weekly")d.setDate(d.getDate()+7*i);else return addMonths(t.due,i);return dateString(d)}
 function periodAt(t,d){
- if(d<t.due)return null;
- for(let i=0;i<5000;i++){let due=recurringDue(t,i),next=recurringDue(t,i+1);if(d<next)return {i,due,next}}
- return null;
+ if(d<t.start)return null;
+ if(t.freq==="daily"){let i=days(t.due,d);if(i<0)return d===t.start?{i:0,start:t.start,due:t.due}:null;let due=dateString(new Date(parseDate(t.due).getTime()+i*86400000));return {i,start:due,due:due}}
+ if(t.freq==="weekly"){
+   let firstStart=t.start>dateString(new Date(parseDate(t.due).getTime()-6*86400000))?t.start:dateString(new Date(parseDate(t.due).getTime()-6*86400000));
+   if(d>=firstStart&&d<=t.due)return {i:0,start:firstStart,due:t.due};
+   for(let i=1;i<1000;i++){let prev=recurringDue(t,i-1),due=recurringDue(t,i),start=dateString(new Date(parseDate(prev).getTime()+86400000));if(d>=start&&d<=due)return {i,start,due};if(d<start)return null}
+ }
+ if(t.freq==="monthly"){
+   if(d>=t.start&&d<=t.due)return {i:0,start:t.start,due:t.due};
+   for(let i=1;i<500;i++){let prev=recurringDue(t,i-1),due=recurringDue(t,i),start=dateString(new Date(parseDate(prev).getTime()+86400000));if(d>=start&&d<=due)return {i,start,due};if(d<start)return null}
+ } return null;
 }
 function periodCompletions(t,p){return (t.completions||[]).filter(c=>Number(c.period)===p.i).sort((a,b)=>a.date.localeCompare(b.date))}
 function contribution(t,d){
@@ -95,10 +112,12 @@ function contribution(t,d){
   return d>t.due?oncePenalty(t,d):0;
  }
  const p=periodAt(t,d);if(!p)return 0;
- const cs=periodCompletions(t,p), todays=cs.filter(c=>c.date===d);
+ const cs=periodCompletions(t,p),todays=cs.filter(c=>c.date===d),first=cs[0];
  if(todays.length)return round2(todays.reduce((sum,c)=>sum+Number(c.points||0),0));
- const first=cs[0];if(first&&d>=first.date)return 0;
- return d>p.due?-Number(t.points):0;
+ if(first&&d>=first.date)return 0;
+ if(t.freq==="daily"&&d===p.due&&d<today())return -Number(t.points);
+ if(d>p.due)return -Number(t.points);
+ return 0;
 }
 function dailyScore(d){return round2(state.tasks.reduce((sum,t)=>sum+contribution(t,d),0))}
 function currentValue(t){
@@ -115,7 +134,7 @@ function escapeHtml(x){const d=document.createElement("div");d.textContent=x;ret
 function render(){
  const sc=dailyScore(today());$("score").textContent=format(sc);$("score").className="score"+(sc<0?" negative":"");
  $("date").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
- $("endDay").value=state.endDay;
+ $("startDay").value=state.startDay||"06:00";$("endDay").value=state.endDay;
  const active=state.tasks.filter(t=>t.type!=="once"||!t.completed);
  const once=active.filter(t=>t.type==="once"), recur=active.filter(t=>t.type!=="once");
  const row=t=>`<div class="task" data-task="${t.id}"><div><div class="name">${escapeHtml(t.name)}</div><div class="meta">${t.type==="once"?"Due "+t.due:(t.freq+" · "+(t.type==="recurring-lock"?"once per period":"repeatable"))}</div></div><div class="value ${currentValue(t)<0?"negative":""}">${format(currentValue(t))}</div></div>`;
@@ -129,14 +148,31 @@ function relevantDates(){
  state.tasks.forEach(t=>{let start=parseDate(t.start),end=parseDate(t.completed||today());while(start<=end){set.add(dateString(start));start.setDate(start.getDate()+1)};(t.completions||[]).forEach(c=>set.add(c.date))});
  return [...set].sort().reverse();
 }
-function renderHistory(){
- const dates=relevantDates().slice(0,30);
- $("history").innerHTML=dates.length?dates.map(d=>`<div class="history"><span>${d}</span><b class="${dailyScore(d)<0?"negative":""}">${format(dailyScore(d))}</b></div>`).join(""):'<div class="empty">No history yet.</div>';
+let scoreView="high",adjustRef=null;
+function scoringEvents(d){
+ let out=[];
+ state.tasks.forEach(t=>{
+  if(t.type==="once"){
+   if(t.completed===d)out.push({task:t,event:"once",name:t.name,value:t.completed<=t.due?onceReward(t,d):0,kind:t.completed<=t.due?"Completed":"Overdue completion"});
+   else if((!t.completed||d<t.completed)&&d>t.due)out.push({task:t,name:t.name,value:oncePenalty(t,d),kind:"Overdue penalty"});
+  }else{
+   let p=periodAt(t,d);if(!p)return;let cs=periodCompletions(t,p),todays=cs.filter(c=>c.date===d),first=cs[0];
+   todays.forEach(c=>out.push({task:t,event:c,name:t.name,value:Number(c.points||0),kind:Number(c.points)>0?"Completed":"Overdue completion"}));
+   if(!todays.length&&!first&&t.freq==="daily"&&d===p.due&&d<today())out.push({task:t,name:t.name,value:-Number(t.points),kind:"Missed daily task"});
+   else if(!todays.length&&!first&&d>p.due)out.push({task:t,name:t.name,value:-Number(t.points),kind:"Overdue recurring penalty"});
+  }
+ });return out;
 }
+function renderHistory(){
+ let dates=relevantDates(), rows=dates.map(d=>[d,dailyScore(d)]);
+ if(scoreView==="high"){rows.sort((a,b)=>b[1]-a[1]);$("history").innerHTML=rows.map((x,i)=>`<div class="scoreday" data-day="${x[0]}"><b>${i+1}</b><span>${x[0]}</span><b>${format(x[1])}</b></div>`).join("")}
+ else{let show=rows.slice(0,30).reverse(),mx=Math.max(1,...show.map(x=>Math.abs(x[1])));$("history").innerHTML='<div class="graph">'+show.map(x=>`<div class="gcol" data-day="${x[0]}"><div class="gbar" style="height:${Math.max(2,Math.abs(x[1])/mx*140)}px"></div><div class="glabel">${x[0].slice(5)}</div></div>`).join("")+'</div>'}
+}
+function openDay(d){$("dayTitle").textContent=d;$("dayTotal").textContent="Daily score "+format(dailyScore(d));let ev=scoringEvents(d);$("dayEvents").innerHTML=ev.length?ev.map((x,i)=>`<div class="event" data-i="${i}" data-day="${d}"><div><b>${escapeHtml(x.name)}</b><div class="meta">${x.kind}${x.event?" · tap to adjust":""}</div></div><b>${format(x.value)}</b></div>`).join(""):'<div class="empty">No scoring events.</div>';$("dayModal").style.display="flex";$("dayEvents")._events=ev}
 function renderClock(){
- const now=new Date(),start=new Date(now),end=new Date(now);start.setHours(0,0,0,0);let [h,m]=state.endDay.split(":").map(Number);end.setHours(h,m,0,0);
- const elapsed=Math.max(0,Math.min(1,(now-start)/Math.max(1,end-start)));$("ring").style.setProperty("--deg",(elapsed*360)+"deg");
- const mins=Math.max(0,Math.floor((end-now)/60000));$("clock").innerHTML=mins?`${Math.floor(mins/60)}h ${mins%60}m<br>left`:"Day ended";
+ const n=new Date(),mins=n.getHours()*60+n.getMinutes(),[sh,sm]=(state.startDay||"06:00").split(":").map(Number),[eh,em]=state.endDay.split(":").map(Number),st=sh*60+sm,en=eh*60+em;
+ if(mins<st||mins>=en){$("ring").style.setProperty("--deg","0deg");$("clock").innerHTML=mins>=en?"Next day<br>"+state.startDay:"Starts<br>"+state.startDay;return}
+ const f=(mins-st)/Math.max(1,en-st);$("ring").style.setProperty("--deg",(f*360)+"deg");let left=en-mins;$("clock").innerHTML=`${Math.floor(left/60)}h ${left%60}m<br>left`;
 }
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").classList.remove("show"),1600)}
 function openTask(t){
@@ -150,7 +186,7 @@ $("type").onchange=()=>$("freqBox").style.display=$("type").value==="once"?"none
 $("tasks").onclick=e=>{const row=e.target.closest("[data-task]");if(row)openTask(state.tasks.find(t=>t.id===row.dataset.task))};
 $("saveTask").onclick=()=>{
  const name=$("name").value.trim(),points=Number($("points").value),start=$("start").value,due=$("due").value;
- if(!name)return toast("Enter a task name");if(!Number.isInteger(points)||points<1)return toast("Points must be a whole number");if(!start||!due)return toast("Choose both dates");if(due<start)return toast("Due date must follow start date");
+ if(!name)return toast("Enter a task name");if(!Number.isInteger(points)||points<1||points>10)return toast("Points must be a whole number from 1–10");if(!start||!due)return toast("Choose both dates");if(due<start)return toast("Due date must follow start date");
  const data={name,points,start,due,type:$("type").value,freq:$("freq").value};
  const t=taskById();if(t)Object.assign(t,data);else state.tasks.push({...data,id:id(),completed:null,completions:[]});
  persist();$("taskModal").style.display="none";render();toast("Task saved");
@@ -170,6 +206,14 @@ $("confirmCompletion").onclick=()=>{
  persist();$("completeModal").style.display="none";$("taskModal").style.display="none";render();
  if(earned>0){const a=$("sound");try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}toast(`${format(earned)} points`)}else toast("Completed · 0.00");
 };
+$("startDay").onchange=()=>{state.startDay=$("startDay").value;persist();renderClock()};
+$("highView").onclick=()=>{scoreView="high";$("highView").className="";$("graphView").className="secondary";renderHistory()};
+$("graphView").onclick=()=>{scoreView="graph";$("graphView").className="";$("highView").className="secondary";renderHistory()};
+$("history").onclick=e=>{let r=e.target.closest("[data-day]");if(r)openDay(r.dataset.day)};
+$("dayClose").onclick=()=>$("dayModal").style.display="none";
+$("dayEvents").onclick=e=>{let r=e.target.closest("[data-i]");if(!r)return;let x=$("dayEvents")._events[Number(r.dataset.i)];if(!x||!x.event)return;adjustRef=x;$("adjustName").textContent=x.name;$("adjustDate").value=x.event==="once"?x.task.completed:x.event.date;$("adjustModal").style.display="flex"};
+$("adjustClose").onclick=()=>$("adjustModal").style.display="none";
+$("adjustSave").onclick=()=>{if(!adjustRef)return;let d=$("adjustDate").value,t=adjustRef.task;if(adjustRef.event==="once")t.completed=d;else{let p=periodAt(t,d);if(!p)return toast("Date is outside an active period");adjustRef.event.date=d;adjustRef.event.period=p.i;adjustRef.event.points=(d>p.due)?0:Number(t.points)}persist();$("adjustModal").style.display="none";$("dayModal").style.display="none";render();toast("History recalculated")};
 $("endDay").onchange=()=>{state.endDay=$("endDay").value;persist();renderClock()};
 render();setInterval(renderClock,30000);
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(console.error);
