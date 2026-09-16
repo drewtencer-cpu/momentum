@@ -4,7 +4,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f1e9",
-  "theme_color": "#f4f1e9",
-  "description": "Momentum V1.4 test build"
+  "background_color": "#061b35",
+  "theme_color": "#061b35",
+  "description": "Momentum V1.5 navy/electric test build"
 }

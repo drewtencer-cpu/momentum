@@ -3,35 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f4f1e9"><meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="./manifest.webmanifest"><title>Momentum V1.4</title>
+<link rel="manifest" href="./manifest.webmanifest"><title>Momentum V1.5</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f1e9;color:#1d1d1d;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{max-width:620px;margin:auto;padding:22px 16px 80px}.top{display:flex;justify-content:space-between;align-items:start;gap:20px}
-.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.13em;opacity:.55}.score{font-size:56px;font-weight:800;line-height:1}.date,.meta{font-size:12px;opacity:.58}
-.ring{--deg:0deg;width:86px;height:86px;border-radius:50%;display:grid;place-items:center;position:relative;flex:none}
-.ring:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(#222 0 var(--deg),#d8d3c7 var(--deg) 360deg)}
-.ring:after{content:"";position:absolute;inset:10px;border-radius:50%;background:#f4f1e9}.ring span{position:relative;z-index:2;text-align:center;font-size:11px}
-.card{background:#fffdf8;border:1px solid #ddd7ca;border-radius:20px;padding:16px;margin-top:18px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:18px}
-button{border:0;border-radius:12px;padding:11px 14px;background:#1d1d1d;color:white;font:inherit;font-weight:700}button.secondary{background:#ece7db;color:#222}button.danger{background:#f2dddd;color:#812626}
-.task{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px 0;border-top:1px solid #eee7db;align-items:center}.task:first-child{border-top:0}
-.name{font-weight:750;overflow-wrap:anywhere}.value{font-size:19px;font-weight:800;text-align:right}.negative{color:#9b2c2c}.empty{text-align:center;opacity:.5;padding:22px}
-.sectionlabel{font-size:11px;text-transform:uppercase;letter-spacing:.12em;opacity:.5;margin-top:18px}.row{display:flex;gap:8px}.row>*{flex:1}
-label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,select{width:100%;padding:12px;border:1px solid #d4cec1;border-radius:10px;background:white;font:inherit}
-.modal{display:none;position:fixed;inset:0;background:#0008;z-index:10;align-items:flex-end;justify-content:center}.sheet{background:#fffdf8;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}
-.actions{display:flex;gap:8px;margin-top:18px}.actions button{flex:1}.history{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-top:1px solid #eee7db}.history:first-child{border-top:0}
-.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#222;color:white;border-radius:999px;padding:10px 15px;font-size:13px;font-weight:700;opacity:0;transition:.18s;z-index:30;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
-.scoreday{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:10px 0;border-top:1px solid #eee7db;cursor:pointer}.scoreday:first-child{border-top:0}
-.graph{height:180px;display:flex;align-items:flex-end;gap:5px;margin-top:12px;overflow-x:auto;border-bottom:1px solid #aaa}.gcol{min-width:22px;flex:1;text-align:center;cursor:pointer}.gbar{background:#222;border-radius:4px 4px 0 0;min-height:2px}.glabel{font-size:9px;opacity:.5;margin-top:4px}.event{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 0;border-top:1px solid #eee7db;cursor:pointer}
-@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:24px}}
+:root{--navy:#061b35;--navy2:#0a2747;--navy3:#10365c;--electric:#e8f52a;--electric2:#c9e72b;--white:#f7fbff;--muted:#91a9c2;--line:#24486b;--hot:#ff5364}
+*{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:620px;margin:auto;padding:22px 16px 80px}
+.hero{text-align:center;padding:8px 0 12px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}.date,.meta{font-size:12px;color:var(--muted)}
+.ring{--remain:360deg;width:min(64vw,250px);height:min(64vw,250px);border-radius:50%;display:grid;place-items:center;position:relative;margin:12px auto 8px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.ring:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--electric) 0 var(--remain),rgba(145,169,194,.22) var(--remain) 360deg)}
+.ring:after{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--navy)}.ringInner{position:relative;z-index:2;display:grid;place-items:center;min-width:150px;min-height:80px}.ringText{position:absolute;transition:opacity .18s ease,transform .18s ease}.ringText.hidden{opacity:0;transform:scale(.96);pointer-events:none}.score{font-size:58px;font-weight:850;line-height:1;color:var(--white);font-variant-numeric:tabular-nums}.clockText{font-size:20px;font-weight:800;line-height:1.15;color:var(--electric)}
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:18px}button{border:0;border-radius:12px;padding:11px 14px;background:var(--electric);color:#06111e;font:inherit;font-weight:800}button.secondary{background:#173b5e;color:var(--white)}button.danger{background:#5d1f2a;color:#ffd9dd}
+.sectionlabel{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);margin:18px 0 5px}.task{--bg:var(--navy3);--fg:var(--white);--border:var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:13px 12px;margin:8px 0;border:1px solid var(--border);border-radius:14px;align-items:center;background:var(--bg);color:var(--fg);transition:.2s}.task .meta{color:inherit;opacity:.68}.name{font-weight:760;overflow-wrap:anywhere}.value{font-size:19px;font-weight:850;text-align:right;color:inherit}.repeatDone{border-style:dashed;opacity:.72;transform:scale(.985);margin-top:5px}.repeatDone .name:after{content:"  ✓";color:var(--electric)}.empty{text-align:center;color:var(--muted);padding:22px}
+.row{display:flex;gap:8px}.row>*{flex:1}label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#0b2c4e;color:var(--white);font:inherit;color-scheme:dark}.modal{display:none;position:fixed;inset:0;background:#000b;z-index:10;align-items:flex-end;justify-content:center}.sheet{background:var(--navy2);width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom))}.actions{display:flex;gap:8px;margin-top:18px}.actions button{flex:1}
+.history{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-top:1px solid var(--line)}.history:first-child{border-top:0}.scoreday{display:grid;grid-template-columns:30px 1fr auto;gap:8px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}.scoreday:first-child{border-top:0}.graph{height:180px;display:flex;align-items:flex-end;gap:5px;margin-top:12px;overflow-x:auto;border-bottom:1px solid var(--line)}.gcol{min-width:22px;flex:1;text-align:center;cursor:pointer}.gbar{background:var(--electric);border-radius:4px 4px 0 0;min-height:2px}.glabel{font-size:9px;color:var(--muted);margin-top:4px}.event{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#020a13;color:white;border:1px solid var(--line);border-radius:999px;padding:10px 15px;font-size:13px;font-weight:700;opacity:0;transition:.18s;z-index:30;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}.scoreBurst{position:fixed;left:50%;top:20%;transform:translate(-50%,12px) scale(.8);font-size:42px;font-weight:900;z-index:40;opacity:0;pointer-events:none;text-shadow:0 0 18px currentColor}.scoreBurst.show{animation:burst .75s ease-out}@keyframes burst{0%{opacity:0;transform:translate(-50%,12px) scale(.8)}18%{opacity:1;transform:translate(-50%,0) scale(1.05)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-28px) scale(1)}}.scoreBurst.pos{color:var(--electric)}.scoreBurst.neg{color:#ff5264}
+@media(min-width:700px){.modal{align-items:center}.sheet{border-radius:24px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body><main>
-<div class="top"><div><div class="kicker">Today's score</div><div id="score" class="score">0.00</div><div id="date" class="date"></div></div><div id="ring" class="ring"><span id="clock"></span></div></div>
+<div class="hero"><div class="kicker">Momentum</div><div id="ring" class="ring" role="button" tabindex="0" aria-label="Toggle score and time remaining"><div class="ringInner"><div id="score" class="score ringText">0.00</div><div id="clock" class="clockText ringText hidden"></div></div></div><div id="date" class="date"></div></div>
 <section class="card"><div class="head"><h2>Tasks</h2><button id="add">+ Task</button></div><div id="tasks"></div></section>
 <section class="card"><div class="head"><h2>Scoreboard</h2></div>
 <div class="row" style="margin-top:10px"><button id="highView">High Scores</button><button id="graphView" class="secondary">History</button></div>
 <div id="history"></div></section>
 <section class="card"><div class="head"><h2>Day settings</h2></div><div class="row"><div><label>Start of day</label><input id="startDay" type="time"></div><div><label>End of day</label><input id="endDay" type="time"></div></div>
-<div class="meta" style="margin-top:8px">Completions after End of Day and before the next Start of Day count toward the upcoming scoring day.</div><div class="meta" style="margin-top:9px">V1.4 test build</div></section>
+<div class="meta" style="margin-top:8px">Completions after End of Day and before the next Start of Day count toward the upcoming scoring day.</div><div class="meta" style="margin-top:9px">V1.5 navy/electric test build</div></section>
 </main>
 
 <div id="taskModal" class="modal"><div class="sheet">
@@ -52,12 +46,13 @@ label{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}input,selec
 </div></div>
 <div id="dayModal" class="modal"><div class="sheet"><div class="head"><div><h2 id="dayTitle">Daily Score Details</h2><div id="dayTotal" class="meta"></div></div><button id="dayClose" class="secondary">Close</button></div><div id="dayEvents"></div></div></div>
 <div id="adjustModal" class="modal"><div class="sheet"><div class="head"><h2>Adjust completion</h2><button id="adjustClose" class="secondary">Close</button></div><div id="adjustName" class="meta"></div><label>Completion scoring date</label><input id="adjustDate" type="date"><div class="actions"><button id="adjustSave">Save correction</button></div></div></div>
-<div id="toast" class="toast"></div><audio id="sound" src="./positive-points.m4a" preload="auto"></audio>
+<div id="toast" class="toast"></div><div id="scoreBurst" class="scoreBurst"></div><audio id="sound" src="./positive-points.m4a" preload="auto"></audio><audio id="lossSound" src="./point-loss.m4a" preload="auto"></audio>
 
 <script>
 "use strict";
-const STORAGE="momentum-v1.4";
-const PREVIOUS="momentum-v1.3-clean";
+const STORAGE="momentum-v1.5";
+const PREVIOUS="momentum-v1.4";
+const PREVIOUS2="momentum-v1.3-clean";
 const LEGACY="momentum-v1.2";
 const $=id=>document.getElementById(id);
 const dateString=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -78,7 +73,7 @@ function normalizeTask(t){
 }
 function loadState(){
  try{
-  const own=localStorage.getItem(STORAGE)||localStorage.getItem(PREVIOUS);
+  const own=localStorage.getItem(STORAGE)||localStorage.getItem(PREVIOUS)||localStorage.getItem(PREVIOUS2);
   if(own){const x=JSON.parse(own);return {tasks:(x.tasks||[]).map(normalizeTask),startDay:x.startDay||"06:00",endDay:x.endDay||"22:00"}}
   const old=localStorage.getItem(LEGACY);
   if(old){const x=JSON.parse(old);const migrated={tasks:(x.tasks||[]).map(normalizeTask),startDay:x.startDay||"06:00",endDay:x.endDay||"22:00"};localStorage.setItem(STORAGE,JSON.stringify(migrated));return migrated}
@@ -129,19 +124,29 @@ function currentValue(t){
 }
 function isLocked(t){if(t.type!=="recurring-lock")return false;const p=periodAt(t,today());return !!(p&&periodCompletions(t,p).length)}
 function taskById(){return state.tasks.find(t=>t.id===editingId)}
+function onceVisual(t){
+ const now=today(); if(now<t.start)return {bg:"#10365c",fg:"#f7fbff",border:"#24486b"};
+ const total=Math.max(1,days(t.start,t.due));
+ if(now<=t.due){const age=Math.max(0,Math.min(1,days(t.start,now)/total));const r=Math.round(16+(150-16)*age),g=Math.round(54+(43-54)*age),b=Math.round(92+(55-92)*age);const tr=Math.round(247+(255-247)*age),tg=Math.round(251+(112-251)*age),tb=Math.round(255+(120-255)*age);return {bg:`rgb(${r},${g},${b})`,fg:`rgb(${tr},${tg},${tb})`,border:`rgb(${Math.min(255,r+45)},${Math.min(255,g+25)},${Math.min(255,b+25)})`}}
+ const overdue=days(t.due,now),heat=Math.min(1,overdue/10);const r=Math.round(105*(1-heat)),g=Math.round(20*(1-heat)),b=Math.round(32*(1-heat));const gr=Math.round(82+(255-82)*heat),gg=Math.round(35+(95-35)*heat),gb=Math.round(50+(40-50)*heat);return {bg:`rgb(${r},${g},${b})`,fg:`rgb(${gr},${gg},${gb})`,border:`rgb(${Math.max(70,gr-30)},${Math.max(20,gg-20)},${Math.max(25,gb-20)})`,glow:heat>.65};
+}
+function completionCountCurrent(t){const p=periodAt(t,today());return p?periodCompletions(t,p).length:0}
+
 function escapeHtml(x){const d=document.createElement("div");d.textContent=x;return d.innerHTML}
 
 function render(){
- const sc=dailyScore(today());$("score").textContent=format(sc);$("score").className="score"+(sc<0?" negative":"");
- $("date").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
- $("startDay").value=state.startDay||"06:00";$("endDay").value=state.endDay;
- const active=state.tasks.filter(t=>t.type!=="once"||!t.completed);
- const once=active.filter(t=>t.type==="once"), recur=active.filter(t=>t.type!=="once");
- const row=t=>`<div class="task" data-task="${t.id}"><div><div class="name">${escapeHtml(t.name)}</div><div class="meta">${t.type==="once"?"Due "+t.due:(t.freq+" · "+(t.type==="recurring-lock"?"once per period":"repeatable"))}</div></div><div class="value ${currentValue(t)<0?"negative":""}">${format(currentValue(t))}</div></div>`;
- let h=once.length?once.map(row).join(""):'<div class="empty">No current one-time tasks.</div>';
- if(recur.length)h+='<div class="sectionlabel">Recurring</div>'+recur.map(row).join("");
- $("tasks").innerHTML=h;
- renderHistory();renderClock();
+ const sc=dailyScore(today()); if(!scoreAnimating){displayedScore=sc;$('score').textContent=format(sc)};$('score').className='score ringText'+(clockMode?' hidden':'');
+ $('date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});$('startDay').value=state.startDay||'06:00';$('endDay').value=state.endDay;
+ const active=state.tasks.filter(t=>t.type!=='once'||!t.completed);
+ const once=active.filter(t=>t.type==='once').sort((a,b)=>currentValue(b)-currentValue(a)||a.due.localeCompare(b.due));
+ const recurAll=active.filter(t=>t.type!=='once'),recur=recurAll.filter(t=>!(t.type==='recurring-lock'&&isLocked(t)));
+ const activeRecur=recur.filter(t=>!(t.type==='recurring-repeat'&&completionCountCurrent(t)>0)).sort((a,b)=>currentValue(b)-currentValue(a)||a.due.localeCompare(b.due));
+ const doneRepeat=recur.filter(t=>t.type==='recurring-repeat'&&completionCountCurrent(t)>0).sort((a,b)=>currentValue(b)-currentValue(a)||a.due.localeCompare(b.due));
+ const row=(t,extra='')=>{let v=currentValue(t),vis=t.type==='once'?onceVisual(t):{bg:'#10365c',fg:v<0?'#ff6673':'#f7fbff',border:v<0?'#8b2638':'#24486b'};let count=t.type==='recurring-repeat'?completionCountCurrent(t):0;let style=`--bg:${vis.bg};--fg:${vis.fg};--border:${vis.border};${vis.glow?'text-shadow:0 0 10px currentColor;':''}`;let meta=t.type==='once'?`Due ${t.due}`:`${t.freq} · ${t.type==='recurring-lock'?'once per cycle':'repeatable'}${count?` · ✓ ${count}× this cycle`:''}`;return `<div class="task ${extra}" style="${style}" data-task="${t.id}"><div><div class="name">${escapeHtml(t.name)}</div><div class="meta">${meta}</div></div><div class="value">${format(v)}</div></div>`};
+ let h='<div class="sectionlabel">One-time tasks</div>'+(once.length?once.map(t=>row(t)).join(''):'<div class="empty">No current one-time tasks.</div>');
+ h+='<div class="sectionlabel">Recurring tasks</div>'+(activeRecur.length?activeRecur.map(t=>row(t)).join(''):'<div class="empty">No active recurring tasks.</div>');
+ if(doneRepeat.length)h+='<div class="sectionlabel">Completed this cycle · repeatable</div>'+doneRepeat.map(t=>row(t,'repeatDone')).join('');
+ $('tasks').innerHTML=h;renderHistory();renderClock();
 }
 function relevantDates(){
  const set=new Set([today()]);
@@ -169,11 +174,17 @@ function renderHistory(){
  else{let show=rows.slice(0,30).reverse(),mx=Math.max(1,...show.map(x=>Math.abs(x[1])));$("history").innerHTML='<div class="graph">'+show.map(x=>`<div class="gcol" data-day="${x[0]}"><div class="gbar" style="height:${Math.max(2,Math.abs(x[1])/mx*140)}px"></div><div class="glabel">${x[0].slice(5)}</div></div>`).join("")+'</div>'}
 }
 function openDay(d){$("dayTitle").textContent=d;$("dayTotal").textContent="Daily score "+format(dailyScore(d));let ev=scoringEvents(d);$("dayEvents").innerHTML=ev.length?ev.map((x,i)=>`<div class="event" data-i="${i}" data-day="${d}"><div><b>${escapeHtml(x.name)}</b><div class="meta">${x.kind}${x.event?" · tap to adjust":""}</div></div><b>${format(x.value)}</b></div>`).join(""):'<div class="empty">No scoring events.</div>';$("dayModal").style.display="flex";$("dayEvents")._events=ev}
+let clockMode=false,displayedScore=0,scoreAnimating=false;
 function renderClock(){
- const n=new Date(),mins=n.getHours()*60+n.getMinutes(),[sh,sm]=(state.startDay||"06:00").split(":").map(Number),[eh,em]=state.endDay.split(":").map(Number),st=sh*60+sm,en=eh*60+em;
- if(mins<st||mins>=en){$("ring").style.setProperty("--deg","0deg");$("clock").innerHTML=mins>=en?"Next day<br>"+state.startDay:"Starts<br>"+state.startDay;return}
- const f=(mins-st)/Math.max(1,en-st);$("ring").style.setProperty("--deg",(f*360)+"deg");let left=en-mins;$("clock").innerHTML=`${Math.floor(left/60)}h ${left%60}m<br>left`;
+ const n=new Date(),mins=n.getHours()*60+n.getMinutes(),[sh,sm]=(state.startDay||'06:00').split(':').map(Number),[eh,em]=state.endDay.split(':').map(Number),st=sh*60+sm,en=eh*60+em;let remain=0,text='';
+ if(en>st&&mins>=st&&mins<en){const left=en-mins;remain=left/(en-st);text=`${Math.floor(left/60)}h ${left%60}m<br>left`}
+ else if(mins<st){remain=1;const left=st-mins;text=`Starts in<br>${Math.floor(left/60)}h ${left%60}m`}
+ else{remain=0;text=`Day ended<br>${state.endDay}`}
+ $('ring').style.setProperty('--remain',(Math.max(0,Math.min(1,remain))*360)+'deg');$('clock').innerHTML=text;$('clock').className='clockText ringText'+(clockMode?'':' hidden');$('score').className='score ringText'+(clockMode?' hidden':'');
 }
+function toggleClock(){clockMode=!clockMode;renderClock()}
+$('ring').addEventListener('click',toggleClock);$('ring').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleClock()}});
+function animateScore(delta){const target=dailyScore(today()),start=Number.isFinite(displayedScore)?displayedScore:target-delta;scoreAnimating=true;const burst=$('scoreBurst');burst.textContent=format(delta);burst.className='scoreBurst '+(delta<0?'neg':'pos');void burst.offsetWidth;burst.classList.add('show');if(delta<0){const a=$('lossSound');try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}}const dur=Math.min(700,260+Math.abs(target-start)*28),t0=performance.now();function frame(now){const q=Math.min(1,(now-t0)/dur),ease=1-Math.pow(1-q,3),v=start+(target-start)*ease;displayedScore=v;$('score').textContent=format(v);if(q<1)requestAnimationFrame(frame);else{displayedScore=target;$('score').textContent=format(target);scoreAnimating=false}}requestAnimationFrame(frame)}
 function toast(x){$("toast").textContent=x;$("toast").classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").classList.remove("show"),1600)}
 function openTask(t){
  editingId=t?t.id:null;$("taskTitle").textContent=t?"Edit task":"New task";$("name").value=t?t.name:"";$("points").value=t?t.points:7;$("start").value=t?t.start:today();
@@ -203,8 +214,8 @@ $("completionDate").onchange=previewCompletion;
 $("confirmCompletion").onclick=()=>{
  const t=taskById(),d=$("completionDate").value;if(!t||!d)return;const earned=completionValue(t,d);if(earned===null)return toast("Completion date is too early");
  if(t.type==="once")t.completed=d;else{const p=periodAt(t,d);const existing=periodCompletions(t,p);if(t.type==="recurring-lock"&&existing.length)return toast("Already completed this period");t.completions.push({date:d,period:p.i,points:earned})}
- persist();$("completeModal").style.display="none";$("taskModal").style.display="none";render();
- if(earned>0){const a=$("sound");try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}toast(`${format(earned)} points`)}else toast("Completed · 0.00");
+ const before=dailyScore(today());persist();$("completeModal").style.display="none";$("taskModal").style.display="none";render();const after=dailyScore(today()),delta=round2(after-before);
+ if(earned>0){const a=$("sound");try{a.currentTime=0;a.play().catch(()=>{})}catch(e){}toast(`${format(earned)} points`)}else toast("Completed · 0.00");if(delta!==0){displayedScore=before;animateScore(delta)}
 };
 $("startDay").onchange=()=>{state.startDay=$("startDay").value;persist();renderClock()};
 $("highView").onclick=()=>{scoreView="high";$("highView").className="";$("graphView").className="secondary";renderHistory()};
