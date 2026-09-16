@@ -8,8 +8,8 @@
 :root{--navy:#061b35;--navy2:#0a2747;--navy3:#10365c;--electric:#e8f52a;--electric2:#c9e72b;--white:#f7fbff;--muted:#91a9c2;--line:#24486b;--hot:#ff5364}
 *{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:620px;margin:auto;padding:22px 16px 80px}
 .hero{text-align:center;padding:8px 0 12px}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}.date,.meta{font-size:12px;color:var(--muted)}
-.ring{--remain:360deg;width:min(64vw,250px);height:min(64vw,250px);border-radius:50%;display:grid;place-items:center;position:relative;margin:12px auto 8px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
-.ring:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--electric) 0 var(--remain),rgba(145,169,194,.22) var(--remain) 360deg)}
+.ring{--remain:360deg;--elapsed:0deg;width:min(64vw,250px);height:min(64vw,250px);border-radius:50%;display:grid;place-items:center;position:relative;margin:12px auto 8px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.ring:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(145,169,194,.22) 0 var(--elapsed),var(--electric) var(--elapsed) 360deg)}
 .ring:after{content:"";position:absolute;inset:14px;border-radius:50%;background:var(--navy)}.ringInner{position:relative;z-index:2;display:grid;place-items:center;min-width:150px;min-height:80px}.ringText{position:absolute;transition:opacity .18s ease,transform .18s ease}.ringText.hidden{opacity:0;transform:scale(.96);pointer-events:none}.score{font-size:58px;font-weight:850;line-height:1;color:var(--white);font-variant-numeric:tabular-nums}.clockText{font-size:20px;font-weight:800;line-height:1.15;color:var(--electric)}
 .card{background:var(--navy2);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.head h2{margin:0;font-size:18px}button{border:0;border-radius:12px;padding:11px 14px;background:var(--electric);color:#06111e;font:inherit;font-weight:800}button.secondary{background:#173b5e;color:var(--white)}button.danger{background:#5d1f2a;color:#ffd9dd}
 .sectionlabel{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);margin:18px 0 5px}.task{--bg:var(--navy3);--fg:var(--white);--border:var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:13px 12px;margin:8px 0;border:1px solid var(--border);border-radius:14px;align-items:center;background:var(--bg);color:var(--fg);transition:.2s}.task .meta{color:inherit;opacity:.68}.name{font-weight:760;overflow-wrap:anywhere}.value{font-size:19px;font-weight:850;text-align:right;color:inherit}.repeatDone{border-style:dashed;opacity:.72;transform:scale(.985);margin-top:5px}.repeatDone .name:after{content:"  ✓";color:var(--electric)}.empty{text-align:center;color:var(--muted);padding:22px}
@@ -25,7 +25,7 @@
 <div class="row" style="margin-top:10px"><button id="highView">High Scores</button><button id="graphView" class="secondary">History</button></div>
 <div id="history"></div></section>
 <section class="card"><div class="head"><h2>Day settings</h2></div><div class="row"><div><label>Start of day</label><input id="startDay" type="time"></div><div><label>End of day</label><input id="endDay" type="time"></div></div>
-<div class="meta" style="margin-top:8px">Completions after End of Day and before the next Start of Day count toward the upcoming scoring day.</div><div class="meta" style="margin-top:9px">V1.5 navy/electric test build</div></section>
+<div class="meta" style="margin-top:8px">Completions after End of Day and before the next Start of Day count toward the upcoming scoring day.</div><div class="meta" style="margin-top:9px">V1.5.1 navy/electric test build</div></section>
 </main>
 
 <div id="taskModal" class="modal"><div class="sheet">
@@ -180,7 +180,7 @@ function renderClock(){
  if(en>st&&mins>=st&&mins<en){const left=en-mins;remain=left/(en-st);text=`${Math.floor(left/60)}h ${left%60}m<br>left`}
  else if(mins<st){remain=1;const left=st-mins;text=`Starts in<br>${Math.floor(left/60)}h ${left%60}m`}
  else{remain=0;text=`Day ended<br>${state.endDay}`}
- $('ring').style.setProperty('--remain',(Math.max(0,Math.min(1,remain))*360)+'deg');$('clock').innerHTML=text;$('clock').className='clockText ringText'+(clockMode?'':' hidden');$('score').className='score ringText'+(clockMode?' hidden':'');
+ const clamped=Math.max(0,Math.min(1,remain));$('ring').style.setProperty('--remain',(clamped*360)+'deg');$('ring').style.setProperty('--elapsed',((1-clamped)*360)+'deg');$('clock').innerHTML=text;$('clock').className='clockText ringText'+(clockMode?'':' hidden');$('score').className='score ringText'+(clockMode?' hidden':'');
 }
 function toggleClock(){clockMode=!clockMode;renderClock()}
 $('ring').addEventListener('click',toggleClock);$('ring').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleClock()}});
