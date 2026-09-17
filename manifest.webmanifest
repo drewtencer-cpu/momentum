@@ -1,10 +1,14 @@
 {
-  "name": "Momentum",
-  "short_name": "Momentum",
+  "name": "Momentumal",
+  "short_name": "Momentumal",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#061b35",
   "theme_color": "#061b35",
-  "description": "Momentum V1.5 navy/electric test build"
+  "description": "Momentumal productivity tracker",
+  "icons": [
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
 }
